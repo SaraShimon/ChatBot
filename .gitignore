@@ -1,0 +1,49 @@
+
+# Byte-code files
+*.pyc
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environment directories
+.venv/
+env/
+venv/
+.env
+.env/
+/venv_name/ # Example for a specific named virtual env
+
+# Editor/IDE specific files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# OS generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Environment variables
+.env
+.flaskenv
+
+# Database files
+*.sqlite3
+db.sqlite3
+Data/
+
+# Log files
+*.log
+
+# Uploaded files or user generated content
+/media/
+/static_dev/
+
+# Test reports
+/htmlcov/
+.coverage
+
+# Jupyter Notebook files
+.ipynb_checkpoints/
