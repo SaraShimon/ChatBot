@@ -15,7 +15,9 @@ class State(TypedDict):
         language: The language to use for generating responses.
         context: A list of Document objects retrieved from the vector store,
                  providing relevant context for the LLM.
+        session_id: The user chat id
     """
     messages: Annotated[Sequence[BaseMessage], add_messages]
     language: str
     context: List[Document]
+    session_id: str

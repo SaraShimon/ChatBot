@@ -12,16 +12,18 @@ app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
 # Message handler for Slack
 @app.event({"type": "message", "subtype": None})
 def handle_message_events(message, say):
+    session_id = message['user']
     print(message)
-    output = ask_for_help(message['text'])
+    output = ask_for_help(message['text'] , session_id=session_id)
     print(output)
 
     say(output)
 
 @app.event("app_mention")
 def handle_mention(message, say):
+    session_id = message['user']
     print(message)
-    output = ask_for_help(message['text'])
+    output = ask_for_help(message['text'], session_id=session_id)
     print(output)
 
     say(output)

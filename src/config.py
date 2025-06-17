@@ -26,3 +26,5 @@ TRIMMER_ALLOW_PARTIAL = False
 TRIMMER_START_ON = "human"
 
 USERS_DATA_FILE_PATH = project_dir + "Data/DB/users_data.json"
+
+QUEUE_FILE = project_dir + "Data/DB/global_service_queue.json"

@@ -1,6 +1,7 @@
+# src/graph_builder.py
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import HumanMessage
-from langgraph.graph import StateGraph, START
+from langchain_core.messages import HumanMessage, AIMessage
+from langgraph.graph import StateGraph
 from langgraph.checkpoint.memory import MemorySaver
 
 from src.models import State
@@ -8,6 +9,7 @@ from src.ingester import vector_store
 from src.config import LLM
 from src.utils import trimmer
 from src.agent import run_agent
+from src.global_queue import add_user_to_global_queue # Import the global queue function
 
 
 # Define prompt for messages-answering
@@ -54,8 +56,16 @@ def generate(state: State) -> dict:
     )
 
     response = LLM.invoke(full_messages_for_llm)
-    # LangGraph's add_messages will automatically handle adding this to the state's messages.
-    return {"messages": [response]}  # Return the AI's message as a list for add_messages to process
+
+    # Check if the LLM's response indicates it doesn't know the answer
+    if "don't know" in response.content.lower() or "לא יודע" in response.content.lower():
+        user_session_id = state["session_id"] # Get the session ID from the state
+
+        # Add user to the global service queue
+        add_user_to_global_queue(user_session_id) # Use the global queue function
+        return {"messages": [AIMessage(content="אני לא בטוח לגבי התשובה, הפניתי אותך לנציג שירות. אנא המתן.")]}
+    else:
+        return {"messages": [response]}
 
 
 def initial_router(state: State) -> str:
