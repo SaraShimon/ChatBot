@@ -84,11 +84,11 @@ def route_question(state: State) -> str:
     # Check if any agent keyword is present in the user's last message
     for keyword in agent_keywords:
         if keyword in last_message_content:
-            return "agent_node"
+            return "tool_agent"
 
     # Also check for common English keywords if mixed input is possible
     if "update" in last_message_content or "change" in last_message_content or "add" in last_message_content:
-        return "agent_node"
+        return "tool_agent"
 
     return "retrieve"
 
@@ -102,7 +102,7 @@ def build_and_compile_graph():
     graph_builder.add_node("entry_point_router", lambda x: x)  # A simple pass-through node
     graph_builder.add_node("retrieve", retrieve)
     graph_builder.add_node("generate", generate)
-    graph_builder.add_node("agent_node", run_agent)  # The node for running LangChain tools
+    graph_builder.add_node("tool_agent", run_agent)  # The node for running LangChain tools
 
     # Set the 'entry_point_router' node as the initial entry point
     graph_builder.set_entry_point("entry_point_router")
@@ -113,7 +113,7 @@ def build_and_compile_graph():
         "entry_point_router",  # FROM this node
         route_question,  # Use this function to decide WHERE to go
         {
-            "agent_node": "agent_node",  # If route_question returns "agent_node", go to agent_node
+            "tool_agent": "tool_agent",  # If route_question returns "tool_agent", go to tool_agent
             "retrieve": "retrieve"  # If route_question returns "retrieve", go to retrieve
         }
     )
@@ -123,7 +123,7 @@ def build_and_compile_graph():
 
     # Set finish points for both potential flows
     graph_builder.set_finish_point("generate")
-    graph_builder.set_finish_point("agent_node")
+    graph_builder.set_finish_point("tool_agent")
 
     # Checkpoint for state persistence
     checkpointer = MemorySaver()
