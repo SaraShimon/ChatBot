@@ -28,7 +28,7 @@ TRIMMER_ALLOW_PARTIAL = False
 TRIMMER_START_ON = "human"
 
 # Path data files for tools
-USER_VENDORS_FILE = Path(project_dir + "Data/DB/user_vendors.json")
+USER_VENDORS_FILE = Path(project_dir + "Data/DB/users_vendors.json")
 USERS_DATA_FILE = Path(project_dir + "Data/DB/users_data.json")
 
 

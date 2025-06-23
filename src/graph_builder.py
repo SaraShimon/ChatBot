@@ -79,7 +79,7 @@ def route_question(state: State) -> str:
     last_message_content = state["messages"][-1].content.lower()
 
     # Keywords in Hebrew for triggering the agent
-    agent_keywords = ["עדכן", "שנה", "בטל", "הוסף", "מחק", "רשום"]  # Update, Change, Cancel, Add, Delete, Register
+    agent_keywords = ["להוסיף", "עדכן", "שנה", "בטל", "הוסף", "מחק", "רשום"]  # Update, Change, Cancel, Add, Delete, Register
 
     # Check if any agent keyword is present in the user's last message
     for keyword in agent_keywords:

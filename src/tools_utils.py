@@ -1,3 +1,5 @@
+import os
+
 from src.config import USERS_DATA_FILE, USER_VENDORS_FILE
 from pathlib import Path
 from typing import Optional
@@ -32,7 +34,8 @@ def _write_json_file(file_path: Path, data: dict):
     """
     with open(file_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
-
+        f.flush()
+        os.fsync(f.fileno())
 
 # --- Tool Definition: Add Vendor to User ---
 
