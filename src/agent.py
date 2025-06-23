@@ -1,12 +1,12 @@
 from langchain.agents import create_tool_calling_agent, AgentExecutor
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage
-from src.tools import update_user_status_json_entry
+from src.tools import add_vendor_tool, update_user_tool
 from src.config import LLM
 from src.models import State
 
 # Define the tools to be used
-tools = [update_user_status_json_entry]
+tools = [add_vendor_tool, update_user_tool]
 
 # Define the prompt template
 prompt = ChatPromptTemplate.from_messages([
