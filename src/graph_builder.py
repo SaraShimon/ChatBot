@@ -1,5 +1,5 @@
 # src/graph_builder.py
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph
 from langgraph.checkpoint.memory import MemorySaver
@@ -10,6 +10,7 @@ from src.config import LLM
 from src.utils import trimmer
 from src.agent import run_agent  # Assuming run_agent can be called directly as a node
 from src.global_queue import add_user_to_global_queue  # Import the global queue function
+
 
 # Define prompt for messages-answering
 rag_chat_prompt = ChatPromptTemplate.from_messages(
@@ -25,6 +26,17 @@ rag_chat_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+
+tool_routing_prompt = PromptTemplate.from_template(
+    """Decide whether the following user message requires using tools (e.g., updating user details, adding vendors)
+or if it's a general question that can be answered based on existing documents.
+
+Respond only with one word: "tool" or "retrieve".
+
+User message:
+{message}
+"""
+)
 
 # Define application steps (nodes)
 def retrieve(state: State) -> dict:
@@ -72,25 +84,20 @@ def generate(state: State) -> dict:
 
 def route_question(state: State) -> str:
     """
-    Determines whether to route the user's query to the agent (for tool execution)
-    or to the RAG pipeline (for information retrieval).
-    Checks for keywords in Hebrew that suggest an action (update/change).
+    Uses an LLM to decide whether to route the user's query to the tool agent or to the RAG pipeline.
     """
-    last_message_content = state["messages"][-1].content.lower()
+    last_message = state["messages"][-1]
 
-    # Keywords in Hebrew for triggering the agent
-    agent_keywords = ["להוסיף", "עדכן", "שנה", "בטל", "הוסף", "מחק", "רשום"]  # Update, Change, Cancel, Add, Delete, Register
+    if not isinstance(last_message, HumanMessage):
+        raise ValueError("Expected last message to be a HumanMessage.")
 
-    # Check if any agent keyword is present in the user's last message
-    for keyword in agent_keywords:
-        if keyword in last_message_content:
-            return "tool_agent"
+    routing_prompt = tool_routing_prompt.invoke({"message": last_message.content})
+    decision = LLM.invoke(routing_prompt).content.strip().lower()
 
-    # Also check for common English keywords if mixed input is possible
-    if "update" in last_message_content or "change" in last_message_content or "add" in last_message_content:
+    if "tool" in decision:
         return "tool_agent"
-
     return "retrieve"
+
 
 
 def build_and_compile_graph():
