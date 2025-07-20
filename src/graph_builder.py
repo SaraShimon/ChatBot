@@ -1,4 +1,3 @@
-# src/graph_builder.py
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph
